@@ -32,15 +32,16 @@ public class Vector implements Algebraic {
      * object is not a vector.
      */
     public Vector add(Algebraic other) {
-        if (other instanceof Vector && this.len == ((Vector) other).getLength()) {
-            Vector otherVec = (Vector) other;
-            float[] addedArr = new float[len];
-            for (int i = 0; i < len; i++) {
-                addedArr[i] = this.floatAtIndex(i) + otherVec.floatAtIndex(i);
-            }
-            return new Vector(addedArr);
+        if (!isVectorAndSameLength(other))
+            return null;
+
+        Vector otherVec = (Vector) other;
+        float[] addedArr = new float[len];
+        for (int i = 0; i < len; i++) {
+            addedArr[i] = this.floatAtIndex(i) + otherVec.floatAtIndex(i);
         }
-        return null;
+        return new Vector(addedArr);
+
     }
 
     /*
@@ -49,15 +50,15 @@ public class Vector implements Algebraic {
      * lengths or other object is not a vector.
      */
     public Vector subtract(Algebraic other) {
-        if (other instanceof Vector && this.len == ((Vector) other).getLength()) {
-            Vector otherVec = (Vector) other;
-            float[] subtArr = new float[len];
-            for (int i = 0; i < len; i++) {
-                subtArr[i] = this.floatAtIndex(i) - otherVec.floatAtIndex(i);
-            }
-            return new Vector(subtArr);
+        if (!isVectorAndSameLength(other))
+            return null;
+
+        Vector otherVec = (Vector) other;
+        float[] subtArr = new float[len];
+        for (int i = 0; i < len; i++) {
+            subtArr[i] = this.floatAtIndex(i) - otherVec.floatAtIndex(i);
         }
-        return null;
+        return new Vector(subtArr);
     }
 
     /*
@@ -67,15 +68,15 @@ public class Vector implements Algebraic {
      * formula: a1.a2 + b1.b2 + c1.c2 ...
      */
     public Vector multiply(Algebraic other) {
-        if (other instanceof Vector && this.len == ((Vector) other).getLength()) {
-            Vector otherVec = (Vector) other;
-            float total = 0;
-            for (int i = 0; i < len; i++) {
-                total += this.floatAtIndex(i) * otherVec.floatAtIndex(i);
-            }
-            return new Vector(new float[] { total });
+        if (!isVectorAndSameLength(other))
+            return null;
+
+        Vector otherVec = (Vector) other;
+        float total = 0;
+        for (int i = 0; i < len; i++) {
+            total += this.floatAtIndex(i) * otherVec.floatAtIndex(i);
         }
-        return null;
+        return new Vector(new float[] { total });
     }
 
     /*
@@ -84,18 +85,18 @@ public class Vector implements Algebraic {
      * formula: x: (b1.c2 - b2.c1), y: -(a1.c2−a2.c1), z: (a1.b2−a2.b1)
      */
     public Vector crossproduct(Vector other) {
-        if (other instanceof Vector && this.len == ((Vector) other).getLength() && this.len == 3) {
-            Vector otherVec = (Vector) other;
-            float[] crossProdArr = new float[3];
-            crossProdArr[0] = (this.floatAtIndex(1) * otherVec.floatAtIndex(2))
-                    - (otherVec.floatAtIndex(1) * this.floatAtIndex(2));
-            crossProdArr[1] = -((this.floatAtIndex(0) * otherVec.floatAtIndex(2))
-                    - (otherVec.floatAtIndex(0) * this.floatAtIndex(2)));
-            crossProdArr[2] = (this.floatAtIndex(0) * otherVec.floatAtIndex(1))
-                    - (otherVec.floatAtIndex(0) * this.floatAtIndex(1));
-            return new Vector(crossProdArr);
-        }
-        return null;
+        if (!isVectorAndSameLength(other) && this.len == 3)
+            return null;
+
+        Vector otherVec = (Vector) other;
+        float[] crossProdArr = new float[3];
+        crossProdArr[0] = (this.floatAtIndex(1) * otherVec.floatAtIndex(2))
+                - (otherVec.floatAtIndex(1) * this.floatAtIndex(2));
+        crossProdArr[1] = -((this.floatAtIndex(0) * otherVec.floatAtIndex(2))
+                - (otherVec.floatAtIndex(0) * this.floatAtIndex(2)));
+        crossProdArr[2] = (this.floatAtIndex(0) * otherVec.floatAtIndex(1))
+                - (otherVec.floatAtIndex(0) * this.floatAtIndex(1));
+        return new Vector(crossProdArr);
     }
 
     /*
@@ -124,6 +125,10 @@ public class Vector implements Algebraic {
 
     public int getLength() {
         return this.len;
+    }
+
+    public boolean isVectorAndSameLength(Algebraic other) {
+        return other instanceof Vector && this.len == ((Vector) other).getLength();
     }
 
     /*
