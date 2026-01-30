@@ -103,6 +103,7 @@ public class Vector implements Algebraic {
      * Returns true if other is a Vector of the same length with all
      * corresponding elements equal within a tolerance of 10^(−6).
      */
+    @Override
     public boolean equals(Object other) {
         boolean isEqual = true;
         if (other instanceof Vector && this.len == ((Vector) other).getLength()) {
@@ -135,6 +136,7 @@ public class Vector implements Algebraic {
      * Returns a nicely formatted string representing the vector in square brackets,
      * with each value shown to two decimal places.
      */
+    @Override
     public String toString() {
         String result = "";
         for (int i = 0; i < this.len; i++) {
