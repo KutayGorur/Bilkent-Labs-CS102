@@ -19,11 +19,7 @@ public class Vector implements Algebraic {
 
     // Returns a new Vector with all elements negated.
     public Vector negate() {
-        float[] arrToPass = new float[len];
-        for (int i = 0; i < vecArr.length; i++) {
-            arrToPass[i] = vecArr[i] * -1;
-        }
-        return new Vector(arrToPass);
+        return multiply(-1);
     }
 
     /*
@@ -79,13 +75,21 @@ public class Vector implements Algebraic {
         return new Vector(new float[] { total });
     }
 
+    public Vector multiply(float f) {
+        float[] arrToPass = new float[len];
+        for (int i = 0; i < vecArr.length; i++) {
+            arrToPass[i] = vecArr[i] * f;
+        }
+        return new Vector(arrToPass);    
+    }
+
     /*
      * Returns a new Vector representing the cross product of this vector
      * and other. Only defined for 3-dimensional vectors; returns null otherwise.
      * formula: x: (b1.c2 - b2.c1), y: -(a1.c2−a2.c1), z: (a1.b2−a2.b1)
      */
     public Vector crossproduct(Vector other) {
-        if (!isVectorAndSameLength(other) && this.len == 3)
+        if (!(isVectorAndSameLength(other) && this.len == 3))
             return null;
 
         Vector otherVec = (Vector) other;
