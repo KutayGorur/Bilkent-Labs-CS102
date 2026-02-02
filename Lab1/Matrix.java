@@ -1,10 +1,10 @@
 package Lab1;
 
 public class Matrix implements Algebraic {
-    private float[][] matArr;
-    private int rowCount;
-    private int colCount;
-    private boolean isInvalid;
+    protected float[][] matArr;
+    protected int rowCount;
+    protected int colCount;
+    protected boolean isInvalid;
 
     /*
      * Constructs a new Matrix from a given two-dimensional float array.
@@ -120,6 +120,7 @@ public class Matrix implements Algebraic {
         return null;
     }
 
+    // method overload 
     public Algebraic multiply(float f){
         float[][] arrToPass = new float[rowCount][colCount];
         for (int row = 0; row < rowCount; row++) {
@@ -131,7 +132,7 @@ public class Matrix implements Algebraic {
     }
 
     /*
-     * determinant(): Returns the determinant of the matrix. This operation is only
+     * Returns the determinant of the matrix. This operation is only
      * defined for 2x2 or 3x3 square matrices. Returns a 1D Vector containing the result. 
      * If the matrix is not 2x2 or 3x3, return null.
      */
@@ -143,42 +144,6 @@ public class Matrix implements Algebraic {
         if (this.rowCount == 2 && this.colCount == 2){
             return determinantOf2x2Matrix(this);
         } else if (this.rowCount == 3 && this.colCount == 3){
-            /*float result = 0;
-
-            float[] oneDimTempArr = new float[4]; 
-            for (int i = 0; i < 3; i++){
-                float a = this.matArr[0][i];
-                int tempArrSize = 0;
-
-                for (int row = 1; row < this.colCount; row++){
-                    for (int col = 0; col < this.colCount; col++){
-                        if (col == i) continue;
-
-                        oneDimTempArr[tempArrSize] = this.matArr[row][col];
-                        tempArrSize++;
-                    }
-                }
-                float[][] smallMatArr = new float[2][2];
-
-                int j = 0;
-                for (int row = 0; row < smallMatArr.length; row++){
-                    for (int col = 0; col < smallMatArr[0].length; col++){
-                        smallMatArr[row][col] = oneDimTempArr[j];
-                        j++;
-                    }
-                }
-                Matrix d = new Matrix(smallMatArr);
-                
-                if (i % 2 == 0){
-                    result += a * determinantOf2x2Matrix(d).floatAtIndex(0);
-                } else {
-                    result -= a * determinantOf2x2Matrix(d).floatAtIndex(0);
-                }
-            }
-
-            return new Vector(new float[]{result});
-            */
-
             float a = matArr[0][0], b = matArr[0][1], c = matArr[0][2];
             float d = matArr[1][0], e = matArr[1][1], f = matArr[1][2];
             float g = matArr[2][0], h = matArr[2][1], i = matArr[2][2];
@@ -191,7 +156,7 @@ public class Matrix implements Algebraic {
 
     }
 
-    public Vector determinantOf2x2Matrix(Matrix mat){
+    private Vector determinantOf2x2Matrix(Matrix mat){
         float det = (mat.matArr[0][0] * mat.matArr[1][1]) 
             - (mat.matArr[0][1] * mat.matArr[1][0]);
         return new Vector(new float[]{det});
@@ -219,11 +184,6 @@ public class Matrix implements Algebraic {
         return isEqual;
     }
     
-
-    public float getFloatAtPosition(int row, int col) {
-        return this.matArr[row][col];
-    }
-
     public boolean isMatrixAndSameDimension(Object other) {
         return other instanceof Matrix
                 && this.rowCount == ((Matrix) other).rowCount
@@ -240,7 +200,7 @@ public class Matrix implements Algebraic {
         for (int row = 0; row < this.rowCount; row++) {
             res.append("|");
             for (int col = 0; col < this.colCount; col++) {
-                res.append(String.format("%5.2f ", this.getFloatAtPosition(row, col)));
+                res.append(String.format("%5.2f ", this.matArr[row][col]));
             }
             res.append("|\n");
         } 
@@ -248,8 +208,3 @@ public class Matrix implements Algebraic {
         return res.toString();
     }
 }
-
-
-//TODO: add to commit -> Apparently getFloatAtIndex is not efficient, changed it back to arr[row][col]
-// also, in java private does not make a variable accessible to only an instance but a class, we are writing
-// this code in matrix class so when we cast an object to a matrix we are allowed to use private variables
