@@ -5,8 +5,10 @@ public class LTMatrix extends Matrix {
     /*
      * Constructs a new lower triangular matrix from the given
      * two-dimensional float array. The input array must represent a square matrix
-     * with all entries above the main diagonal equal to zero. If the input array does not represent
-     * a valid lower triangular matrix, print an appropriate error message and construct a 0x0 matrix.
+     * with all entries above the main diagonal equal to zero. If the input array
+     * does not represent
+     * a valid lower triangular matrix, print an appropriate error message and
+     * construct a 0x0 matrix.
      */
     LTMatrix(float[][] mat) {
         super(ltmatrixArrayValidifier(mat));
@@ -50,9 +52,12 @@ public class LTMatrix extends Matrix {
     /*
      * Returns a new Matrix whose entries are the elementwise sum
      * of this matrix and other. If other is an LTMatrix, this method should perform
-     * the addition efficiently and return a new LTMatrix; otherwise, it should perform regular
-     * matrix addition and return a new Matrix. Similar to matrix addition, this method
-     * should return null if the matrices have different dimensions or other is not a Matrix.
+     * the addition efficiently and return a new LTMatrix; otherwise, it should
+     * perform regular
+     * matrix addition and return a new Matrix. Similar to matrix addition, this
+     * method
+     * should return null if the matrices have different dimensions or other is not
+     * a Matrix.
      */
     @Override
     public Matrix add(Algebraic other) {
@@ -68,9 +73,11 @@ public class LTMatrix extends Matrix {
     /*
      * Returns a new Matrix whose entries are the elementwise
      * difference of this matrix and other. If other is an LTMatrix, this method
-     * should perform the subtraction efficiently and return a new LTMatrix; 
-     * otherwise, it should perform regular matrix subtraction and return a new Matrix. 
-     * Similar to matrix subtraction, this method should return null if the matrices have 
+     * should perform the subtraction efficiently and return a new LTMatrix;
+     * otherwise, it should perform regular matrix subtraction and return a new
+     * Matrix.
+     * Similar to matrix subtraction, this method should return null if the matrices
+     * have
      * different dimensions or other is not a Matrix.
      */
     @Override
@@ -97,9 +104,12 @@ public class LTMatrix extends Matrix {
 
     /*
      * Returns the product of this matrix and the other object.
-     * o If other is a LTMatrix: Performs efficient matrix multiplication and returns a new LTMatrix.
-     * o If other is a Matrix: Performs matrix multiplication and returns a new Matrix.
-     * o If other is a Vector: Performs matrix-vector multiplication (applying the matrix
+     * o If other is a LTMatrix: Performs efficient matrix multiplication and
+     * returns a new LTMatrix.
+     * o If other is a Matrix: Performs matrix multiplication and returns a new
+     * Matrix.
+     * o If other is a Vector: Performs matrix-vector multiplication (applying the
+     * matrix
      * transformation to the vector) and returns a new Vector.
      * o Returns null if the dimensions are incompatible for the specific operation.
      */
@@ -116,13 +126,13 @@ public class LTMatrix extends Matrix {
 
     public LTMatrix ltmatrixMultiplication(LTMatrix otherMat) {
         float[][] multArr = new float[this.rowCount][otherMat.colCount];
-
         for (int row = 0; row < rowCount; row++) {
-            for (int col = 0; col < otherMat.colCount; col++) {
-                for (int i = 0; i < this.colCount; i++) {
-                    multArr[row][col] += this.matArr[row][i] * otherMat.matArr[i][col];
-                    // TODO: Optimize multiplication for LTMatrix
+            for (int col = 0; col <= row; col++) {
+                float total = 0;
+                for (int i = col; i <= row; i++) {
+                    total += this.matArr[row][i] * otherMat.matArr[i][col];
                 }
+                multArr[row][col] = total;
             }
         }
         return new LTMatrix(multArr);
@@ -133,16 +143,20 @@ public class LTMatrix extends Matrix {
      */
     @Override
     public Vector determinant() {
-        return new Vector(new float[0]);
-        // TODO: Figure out a way to use a recursive algorithm to break matrices down
-        // and calculate them with determinants of smaller 2x2 matrices.
+        float total = this.matArr[0][0];
+        for (int row = 0; row < rowCount; row++) {
+            total *= this.matArr[row][row];
+        }
+        return new Vector(new float[] { total });
     }
 
     /*
      * Compares this matrix with another object for equality. Similar to
      * the Matrix class, two matrices are considered equal if they have the same
-     * dimensions and all corresponding elements are equal within a tolerance of 10−6. 
-     * If the other is an LTMatrix, only the lower triangular entries need to be compared. 
+     * dimensions and all corresponding elements are equal within a tolerance of
+     * 10−6.
+     * If the other is an LTMatrix, only the lower triangular entries need to be
+     * compared.
      * If the other is a Matrix, all matrix entries must be compared.
      */
     @Override
