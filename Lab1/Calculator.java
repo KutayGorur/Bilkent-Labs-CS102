@@ -6,8 +6,15 @@ public class Calculator {
     public static Scanner sc = new Scanner(System.in);
     public static Algebraic a;
     public static Algebraic b;
+    public static int operatorIndex;
     public static void main (String [] args){
-
+        displayMenu();
+        boolean exited = false;
+        if (a instanceof Vector){
+            while (!exited){
+                exited = vectorOperationHandler();
+            }
+        }
     }
 
     public static void displayMenu(){
@@ -20,21 +27,45 @@ public class Calculator {
 
         if (rowSize == 1){
             float[] vecArr = new float[colSize];
-            vectorMenuHandler(vecArr);
+            vectorMenuHandler(vecArr, true);
         } else if (rowSize >= 1){
             float[][] matArr = new float[rowSize][colSize];
-            matrixMenuHandler(matArr);
+            matrixMenuHandler(matArr, true);
         }
     }
 
-    public static void vectorMenuHandler(float[] vecArr){
+    public static void vectorMenuHandler(float[] vecArr, boolean isPrimary){
         System.out.print("Enter vector elements separated by spaces: ");
         for (int i = 0; i < vecArr.length; i++){
             vecArr[i] = sc.nextFloat();
         }
         sc.nextLine();
-        a = new Vector(vecArr);
-        System.out.println(a);
+        if (isPrimary){
+            a = new Vector(vecArr);
+            operatorIndex = ((Vector)a).getLength() / 2;
+            System.out.println(a);
+        } else {
+            b = new Vector(vecArr);
+            System.out.println(b);
+        }
+    }
+
+    public static void matrixMenuHandler(float[][] matArr, boolean isPrimary){
+        System.out.print("Enter matrix elements separated by spaces: ");
+        for (int row = 0; row < matArr.length; row++){
+            for (int col = 0; col < matArr[0].length; col++){
+                matArr[row][col] = sc.nextFloat();
+            }
+        } // TODO: check for ltmatrix 
+        sc.nextLine();
+        if (isPrimary){
+            a = new Matrix(matArr);
+            operatorIndex = ((Vector)a).getLength() / 2;
+            System.out.println(a);
+        } else {
+            b = new Matrix(matArr);
+            System.out.println(b);
+        }    
     }
 
     public static boolean vectorOperationHandler(){
@@ -48,28 +79,18 @@ public class Calculator {
                 5: Cross Product
                 6: Compare
                 7: Exit
-                """);
+                """); // could possibly merge vector and matrix operation handlers
 
         System.out.print("Enter your choice: ");
         int choice = sc.nextInt();
         sc.nextLine();
 
-        if (choice == 1){
-
-            System.out.println("");
-        } else if (choice == 7){
-            exited = true;
-        } else if (choice >= 2 && choice <= 6){
-
-        } else {
-            // default
-        }
-
         switch (choice){
             case 1:
-
+                printNotation(false, "-=");
                 break;
             case 2:
+                printNotation(true, );
                 break;
             case 3:
                 break;
@@ -80,6 +101,7 @@ public class Calculator {
             case 6:
                 break;
             case 7:
+                exited = true;
                 break;
             default:
                 break;
@@ -98,5 +120,14 @@ public class Calculator {
 
         }
     }
+
+    public static void printNotation(boolean dependantOnB, String operators){
+        if (dependantOnB){
+            // print a, operator, b, =, result
+        } else {
+            // operator, a, =, result
+        }
+    }
+
 
 }
