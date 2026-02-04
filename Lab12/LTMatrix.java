@@ -179,4 +179,20 @@ public class LTMatrix extends Matrix {
         }
         return super.equals(other);
     }
+
+    public static boolean checkLTMatrix(Matrix mat){
+        float[][] matArr = mat.matArr;
+        if (matArr[0].length != matArr.length) {
+            return false;
+        }
+
+        for (int row = 0; row < matArr.length; row++) {
+            for (int col = 0; col < matArr[0].length; col++) {
+                if (row <= matArr.length - 2 && col > row && matArr[row][col] != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;       
+    }
 }

@@ -88,7 +88,7 @@ public class Vector implements Algebraic {
      * and other. Only defined for 3-dimensional vectors; returns null otherwise.
      * formula: x: (b1.c2 - b2.c1), y: -(a1.c2−a2.c1), z: (a1.b2−a2.b1)
      */
-    public Vector crossproduct(Vector other) {
+    public Vector crossProduct(Vector other) {
         if (!(isVectorAndSameLength(other) && this.len == 3))
             return null;
 
@@ -130,6 +130,10 @@ public class Vector implements Algebraic {
 
     public int getRows() {
         return this.len;
+    }
+
+    public int getCols(){
+        return 1;
     }
 
     public boolean isVectorAndSameLength(Algebraic other) {

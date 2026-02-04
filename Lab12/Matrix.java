@@ -211,4 +211,8 @@ public class Matrix implements Algebraic {
     public int getRows(){
         return this.rowCount;
     }
+
+    public int getCols(){
+        return this.colCount;
+    }
 }

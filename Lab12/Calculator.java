@@ -6,31 +6,34 @@ public class Calculator {
     public static Scanner sc = new Scanner(System.in);
     public static Algebraic a;
     public static Algebraic b;
-    public static int operatorIndex;
+    public static int operatorLen;
     public static void main (String [] args){
-        displayMenu();
+        algebraicHandler(true);
         boolean exited = false;
-        if (a instanceof Vector){
-            while (!exited){
-                exited = operationHandler();
-            }
+
+        while (!exited){
+            exited = operationHandler();
         }
     }
 
-    public static void displayMenu(){
-        System.out.println("Enter a vector or a matrix:");
+    public static void algebraicHandler(boolean isPrimary){
+        if (isPrimary){
+            System.out.println("Enter a vector or a matrix");    
+        } else {
+            System.out.println("Enter the second vector or matrix");
+        }
         System.out.print("Enter number of rows and columns (n x m): ");
         String rowAndColumn = sc.nextLine().trim();
-        int blankIndex = rowAndColumn.indexOf('\u0000');
+        int blankIndex = rowAndColumn.indexOf(' ');
         int rowSize = Integer.valueOf(rowAndColumn.substring(0, blankIndex));
         int colSize = Integer.valueOf(rowAndColumn.substring(blankIndex + 1));
 
         if (rowSize == 1){
             float[] vecArr = new float[colSize];
-            vectorHandler(vecArr, true);
+            vectorHandler(vecArr, isPrimary);
         } else if (rowSize >= 1){
             float[][] matArr = new float[rowSize][colSize];
-            matrixHandler(matArr, true);
+            matrixHandler(matArr, isPrimary);
         }
     }
 
@@ -42,11 +45,9 @@ public class Calculator {
         sc.nextLine();
         if (isPrimary){
             a = new Vector(vecArr);
-            operatorIndex = ((Vector)a).getLength() / 2;
             System.out.println(a);
         } else {
             b = new Vector(vecArr);
-            System.out.println(b);
         }
     }
 
@@ -60,26 +61,31 @@ public class Calculator {
         sc.nextLine();
         if (isPrimary){
             a = new Matrix(matArr);
-            operatorIndex = ((Vector)a).getLength() / 2;
+            if (LTMatrix.checkLTMatrix((Matrix)a)){
+                System.out.println("Constructed the LTMatrix");
+            }
             System.out.println(a);
         } else {
             b = new Matrix(matArr);
-            System.out.println(b);
+            if (LTMatrix.checkLTMatrix((Matrix)b)){
+                System.out.println("Constructed the LTMatrix");
+            }
         }    
     }
 
     public static boolean operationHandler(){
         boolean exited = false;
-        System.out.println("""
+        System.out.printf("""
+
                 Select an operation:
                 1: Negate
                 2: Add
                 3: Subtract
                 4: Multiply
-                5: Cross Product
+                5: %s
                 6: Compare
                 7: Exit
-                """); // could possibly merge vector and matrix operation handlers
+                \n""", (a instanceof Vector) ? "Cross Product" : "Determinant");
 
         System.out.print("Enter your choice: ");
         int choice = sc.nextInt();
@@ -87,26 +93,79 @@ public class Calculator {
 
         switch (choice){
             case 1:
-                
-                printNotation(false, '-', );
+                Algebraic negated = a.negate();
+                if (negated == null){
+                    System.out.println("Invalid Operation, null");
+                } else {
+                    operatorLen = 1;
+                    printNotation(false, "-", negated, "=", false);
+                    a = negated;    
+                }
                 break;
             case 2:
-                printNotation(true, '+');
+                algebraicHandler(false);
+                Algebraic added = a.add(b);
+                if (added == null){
+                    System.out.println("Invalid Operation, null");
+                } else {
+                    operatorLen = 1;
+                    printNotation(true, "+", added, "=", false);
+                    a = added;
+                }
                 break;
             case 3:
-                printNotation(true, '+');                
+                algebraicHandler(false);
+                Algebraic subtracted = a.subtract(b);
+                if (subtracted == null){
+                    System.out.println("Invalid Operation, null");
+                } else {
+                    operatorLen = 1;
+                    printNotation(true, "-", subtracted, "=", false);
+                    a = subtracted;
+                }               
                 break;
             case 4:
-                printNotation(true, '*');
+                algebraicHandler(false);
+                Algebraic multiplied = a.multiply(b);
+                if (multiplied == null){
+                    System.out.println("Invalid Operation, null");
+                } else {
+                    operatorLen = 1;
+                    printNotation(true, "*", multiplied, "=", false);
+                    a = multiplied;   
+                }     
                 break;
             case 5:
-                printNotation(true, "+"); // crossproduct ??
+                if (a instanceof Vector){
+                    algebraicHandler(false);
+                    Vector crossprod = ((Vector)a).crossProduct((Vector) b);
+                    if (crossprod == null){
+                        System.out.println("Invalid Operation, null");
+                    } else {
+                        operatorLen = 1;
+                        printNotation(true, "x", crossprod, "=", false);
+                        a = crossprod;   
+                    }                       
+                } else if (a instanceof Matrix){
+                    Algebraic determinant = ((Matrix)a).determinant();
+                    if (determinant == null){
+                        System.out.println("Invalid Operation, null");
+                    } else {;
+                        a = determinant;
+                        System.out.println(a); 
+                    }                         
+                }
                 break;
             case 6:
-                printNotation(true, "+");  // compare ?? 
+                algebraicHandler(false);
+                boolean isEqual = a.equals(b);
+                operatorLen = 2;
+                printNotation(true, "==", null, "==>", true);
+                // printNotation(true, "+");  // compare ?? 
                 break;
             case 7:
                 exited = true;
+                System.out.println("Exiting...");
                 break;
             default:
                 break;
@@ -115,27 +174,36 @@ public class Calculator {
         return exited;
     }
 
-    public static void printNotation(boolean dependantOnB, char operator, Algebraic result){
-        ArrayList<StringBuilder> allLines = new ArrayList<StringBuilder>(); // maybe make this static?
-
-        if (dependantOnB){
+    public static void printNotation(boolean dependantOnB, String operator, Algebraic result, String secondOp, boolean compareMode){
+        ArrayList<StringBuilder> allLines = new ArrayList<StringBuilder>();
+        if (compareMode){
             for (int i = 0; i < Math.max(a.getRows(), b.getRows()); i++){
                 allLines.add(new StringBuilder());
-            }
+            } 
             add(allLines, a); // print a
             add(allLines, operator); // print operator
             add(allLines, b); // print b
-            add(allLines, '='); // print = 
-            add(allLines, result); // print result
+            add(allLines, secondOp); // print = 
+            add(allLines, String.valueOf(a.equals(b))); // print result                               
         } else {
-            // operator, a, =, result
-            for (int i = 0; i < a.getRows(); i++){
-                allLines.add(new StringBuilder());
-            }            
-            add(allLines, operator); // print operator
-            add(allLines, a); // print a
-            add(allLines, '='); // print = 
-            add(allLines, result); // print result
+            if (dependantOnB){
+                for (int i = 0; i < Math.max(a.getRows(), b.getRows()); i++){
+                    allLines.add(new StringBuilder());
+                }
+                add(allLines, a); // print a
+                add(allLines, operator); // print operator
+                add(allLines, b); // print b
+                add(allLines, "="); // print = 
+                add(allLines, result); // print result
+            } else {
+                for (int i = 0; i < a.getRows(); i++){
+                    allLines.add(new StringBuilder());
+                }            
+                add(allLines, operator); // print operator
+                add(allLines, a); // print a
+                add(allLines, "="); // print = 
+                add(allLines, result); // print result
+            }
         }
 
         for (StringBuilder sb: allLines){
@@ -143,18 +211,18 @@ public class Calculator {
         }
     }
 
-    public static ArrayList<StringBuilder> add(ArrayList<StringBuilder> allLines, Algebraic other){
+    public static void add(ArrayList<StringBuilder> allLines, Algebraic other){
         for (int i = 0; i < allLines.size(); i++){
-            allLines.set(i, allLines.get(i).append(  getLine((String)other, i + 1)  ));
+            allLines.set(i, allLines.get(i).append(  getLine(other.toString(), i + 1)  ));
         }
     }
-
-    public static ArrayList<StringBuilder> add(ArrayList<StringBuilder> allLines, char ch){ // return void???
+    
+    public static void add(ArrayList<StringBuilder> allLines, String op){
         for (int i = 0; i < allLines.size(); i++){
             if (i == a.getRows() / 2){
-                allLines.set(i, allLines.get(i).append(ch));
+                allLines.set(i, allLines.get(i).append(" " + op + " "));
             } else {
-                allLines.set(i, allLines.get(i).append(" "));                
+                allLines.set(i, allLines.get(i).append(" ".repeat(operatorLen + 2)));                
             }
         }        
     }
@@ -166,7 +234,7 @@ public class Calculator {
             return lineArray[line - 1];
         }
 
-        return "        "; // 8 white space to format
+        return " ".repeat((a.getCols() * 6) + 2 + 2 + operatorLen + 1);
     }
 
 }

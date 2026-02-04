@@ -8,4 +8,10 @@ public interface Algebraic {
     Algebraic subtract(Algebraic other);
 
     Algebraic multiply(Algebraic other);
+
+    int getRows();
+
+    int getCols();
+
+    String toString();
 }
